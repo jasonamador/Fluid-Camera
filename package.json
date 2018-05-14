@@ -1,0 +1,22 @@
+{
+  "name": "fluid-camera",
+  "version": "1.0.0",
+  "description": "[Play here](https://paveldogreat.github.io/WebGL-Fluid-Simulation/)",
+  "main": "dat.gui.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasonamador/Fluid-Camera.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jasonamador/Fluid-Camera/issues"
+  },
+  "homepage": "https://github.com/jasonamador/Fluid-Camera#readme",
+  "dependencies": {
+    "tracking": "^1.1.3"
+  }
+}
