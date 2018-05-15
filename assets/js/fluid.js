@@ -1,6 +1,47 @@
 'use strict';
 
-const canvas = document.getElementsByTagName('canvas')[0];
+// set up tracking
+window.onload = function() {
+  /*
+  Set up some colors
+  */
+  tracking.ColorTracker.registerColor('green', (r, g, b) => {
+    return (g > 100 && r < 100 && b < 100);
+  });
+  tracking.ColorTracker.registerColor('white', (r, g, b) => {
+    return (g > 150 && r > 150 && b > 150);
+  });
+  tracking.ColorTracker.registerColor('blue', (r, g, b) => {
+    return (g < 100 && r < 100 && b > 130);
+  });
+  var tracker = new tracking.ColorTracker(['white', 'green', 'blue']);
+  tracking.track('#camera', tracker, { camera: true });
+
+  /*
+  Color Tracker Handler
+  */
+  tracker.on('track', function(event) {
+    let message = {};
+    if (event.data.length > 0) {
+      event.data.forEach(function(rect) {
+        let x = (rect.x + rect.width / 2);
+        let y = (rect.y + rect.width / 2);
+        switch (rect.color) {
+          case 'green' : drawGreen(x, y); break;
+          case 'white' : drawWhite(x, y); break;
+          case 'blue' : drawBlue(x, y); break;
+        };
+        x = (canvas.width - x) / canvas.width;
+        y = (canvas.height - y) / canvas.height;
+        message[rect.color] = {x, y};
+      });
+      socket.emit('liquid message', message);
+    }
+  });
+}
+
+// set up the canvas
+const canvas = document.getElementById('fluid');
 canvas.width = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
 
@@ -12,13 +53,12 @@ let config = {
     PRESSURE_ITERATIONS: 25,
     CURL: 30,
     SPLAT_RADIUS: 0.005
-}
+};
 
 let pointers = [];
 let splatStack = [];
 
 const  { gl, ext } = getWebGLContext(canvas);
-startGUI();
 
 function getWebGLContext (canvas) {
     const params = { alpha: false, depth: false, stencil: false, antialias: false };
@@ -57,11 +97,6 @@ function getWebGLContext (canvas) {
         formatRG = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
         formatR = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
     }
-
-    if (formatRGBA == null)
-        ga('send', 'event', isWebGL2 ? 'webgl2' : 'webgl', 'not supported');
-    else
-        ga('send', 'event', isWebGL2 ? 'webgl2' : 'webgl', 'supported');
 
     return {
         gl,
@@ -115,38 +150,6 @@ function supportRenderTextureFormat (gl, internalFormat, format, type) {
     return true;
 }
 
-function startGUI () {
-    var gui = new dat.GUI({ width: 300 });
-    gui.add(config, 'TEXTURE_DOWNSAMPLE', { Full: 0, Half: 1, Quarter: 2 }).name('resolution').onFinishChange(initFramebuffers);
-    gui.add(config, 'DENSITY_DISSIPATION', 0.9, 1.0).name('density diffusion');
-    gui.add(config, 'VELOCITY_DISSIPATION', 0.9, 1.0).name('velocity diffusion');
-    gui.add(config, 'PRESSURE_DISSIPATION', 0.0, 1.0).name('pressure diffusion');
-    gui.add(config, 'PRESSURE_ITERATIONS', 1, 60).name('iterations');
-    gui.add(config, 'CURL', 0, 50).name('vorticity').step(1);
-    gui.add(config, 'SPLAT_RADIUS', 0.0001, 0.01).name('splat radius');
-
-    let randomSplats = gui.add({ fun: () => {
-            splatStack.push(parseInt(Math.random() * 20) + 5);
-        }
-    }, 'fun').name('Random splats');
-
-    let github = gui.add({ fun : () => { window.open('https://github.com/PavelDoGreat/WebGL-Fluid-Simulation'); } }, 'fun').name('Github');
-    github.__li.className = 'cr function bigFont';
-    github.__li.style.borderLeft = '3px solid #8C8C8C';
-    let githubIcon = document.createElement('span');
-    github.domElement.parentElement.appendChild(githubIcon);
-    githubIcon.className = 'icon github';
-
-    let twitter = gui.add({ fun : () => { window.open('https://twitter.com/PavelDoGreat'); } }, 'fun').name('Twitter');
-    twitter.__li.className = 'cr function bigFont';
-    twitter.__li.style.borderLeft = '3px solid #8C8C8C';
-    let twitterIcon = document.createElement('span');
-    twitter.domElement.parentElement.appendChild(twitterIcon);
-    twitterIcon.className = 'icon twitter';
-
-    gui.close();
-}
-
 function pointerPrototype () {
     this.id = -1;
     this.x = 0;
@@ -193,7 +196,7 @@ function compileShader (type, source) {
         throw gl.getShaderInfoLog(shader);
 
     return shader;
-};
+}
 
 const baseVertexShader = compileShader(gl.VERTEX_SHADER, `
     precision highp float;
@@ -657,6 +660,8 @@ function resizeCanvas () {
     }
 }
 
+/*
+original touch interactions, to be replaced with the camera
 canvas.addEventListener('mousemove', (e) => {
     pointers[0].moved = pointers[0].down;
     pointers[0].dx = (e.offsetX - pointers[0].x) * 10.0;
@@ -709,3 +714,4 @@ window.addEventListener('touchend', (e) => {
             if (touches[i].identifier == pointers[j].id)
                 pointers[j].down = false;
 });
+*/
