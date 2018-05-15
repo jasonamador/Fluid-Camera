@@ -1,3 +1,7 @@
+// conversion
+const cameraToCanvasX = document.getElementById('fluid').offsetWidth / document.getElementById('camera').offsetWidth;
+const cameraToCanvasY = document.getElementById('fluid').offsetHeight / document.getElementById('camera').offsetHeight;
+
 class Color {
   constructor(name, r, g, b) {
     this.name = name;
@@ -37,8 +41,8 @@ class Tracker {
 
   update(x, y) {
     this.moved = true;
-    this.dx = (x - this.x) * 10.0;
-    this.dy = (y - this.y) * 10.0;
+    this.dx = (x - this.x);
+    this.dy = (y - this.y);
     this.x = x;
     this.y = y;
   }
@@ -52,7 +56,7 @@ tracking.track('#camera', tracker, { camera: true });
 const trackers = {};
 
 //this will be done with the
-trackers.red = (new Tracker(new Color('red', 200, 0, 0), new Range(100, 255, 0, 80, 0, 80)));
+trackers.red = (new Tracker(new Color('red', 0.8, 0.1, 0.1), new Range(180, 255, 0, 80, 0, 80)));
 
 /*
 Color Tracker Handler
@@ -62,8 +66,8 @@ tracker.on('track', function(event) {
   if (event.data.length > 0) {
     event.data.forEach(function(rect) {
       // get the center of the event
-      let x = (rect.x + rect.width / 2);
-      let y = (rect.y + rect.width / 2);
+      let x = (rect.x + rect.width / 2) * cameraToCanvasX;
+      let y = (rect.y + rect.width / 2) * cameraToCanvasY;
       trackers[rect.color].update(x, y);
     });
   }

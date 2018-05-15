@@ -522,7 +522,7 @@ function update () {
     for (let color in trackers) {
       const tracker = trackers[color];
       if (tracker.moved) {
-        splat(tracker.x, tracker.y, tracker.dx, tracker.dy, [tracker.color.r / 255, tracker.color.g / 255, tracker.color.b / 255]);
+        splat(tracker.x, tracker.y, tracker.dx, tracker.dy, [tracker.color.r, tracker.color.g, tracker.color.b]);
         tracker.moved = false;
       }
     }
