@@ -1,8 +1,6 @@
-# WebGL Fluid Simulation
+# Fluid Camera
 
-[Play here](https://paveldogreat.github.io/WebGL-Fluid-Simulation/)
-
-<img src="/screenshot.png?raw=true" width="800">
+This is an [Electron](https://electronjs.org/) app that uses the webcam and [Tracking.js](https://trackingjs.com/) to track customizable colors and uses them to control a modified version of [WebGL-Fluid-Simulation](https://paveldogreat.github.io/WebGL-Fluid-Simulation/) (this repo is actually forked from it).  It works best in the dark with glow sticks, LEDs or lit balloons.
 
 ## References
 
@@ -14,4 +12,4 @@ https://github.com/haxiomic/GPU-Fluid-Experiments
 
 ## License
 
-The code is available under the [MIT license](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation/blob/master/LICENSE)
+The code is available under the MIT license
