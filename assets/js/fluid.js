@@ -1,45 +1,5 @@
 'use strict';
 
-// set up tracking
-window.onload = function() {
-  /*
-  Set up some colors
-  */
-  tracking.ColorTracker.registerColor('green', (r, g, b) => {
-    return (g > 100 && r < 100 && b < 100);
-  });
-  tracking.ColorTracker.registerColor('white', (r, g, b) => {
-    return (g > 150 && r > 150 && b > 150);
-  });
-  tracking.ColorTracker.registerColor('blue', (r, g, b) => {
-    return (g < 100 && r < 100 && b > 130);
-  });
-  var tracker = new tracking.ColorTracker(['white', 'green', 'blue']);
-  tracking.track('#camera', tracker, { camera: true });
-
-  /*
-  Color Tracker Handler
-  */
-  tracker.on('track', function(event) {
-    let message = {};
-    if (event.data.length > 0) {
-      event.data.forEach(function(rect) {
-        let x = (rect.x + rect.width / 2);
-        let y = (rect.y + rect.width / 2);
-        switch (rect.color) {
-          case 'green' : drawGreen(x, y); break;
-          case 'white' : drawWhite(x, y); break;
-          case 'blue' : drawBlue(x, y); break;
-        };
-        x = (canvas.width - x) / canvas.width;
-        y = (canvas.height - y) / canvas.height;
-        message[rect.color] = {x, y};
-      });
-      socket.emit('liquid message', message);
-    }
-  });
-}
-
 // set up the canvas
 const canvas = document.getElementById('fluid');
 canvas.width = canvas.clientWidth;
@@ -55,7 +15,6 @@ let config = {
     SPLAT_RADIUS: 0.005
 };
 
-let pointers = [];
 let splatStack = [];
 
 const  { gl, ext } = getWebGLContext(canvas);
@@ -160,8 +119,6 @@ function pointerPrototype () {
     this.moved = false;
     this.color = [30, 0, 300];
 }
-
-pointers.push(new pointerPrototype());
 
 class GLProgram {
     constructor (vertexShader, fragmentShader) {
@@ -562,12 +519,12 @@ function update () {
     blit(density.write[1]);
     density.swap();
 
-    for (let i = 0; i < pointers.length; i++) {
-        const pointer = pointers[i];
-        if (pointer.moved) {
-            splat(pointer.x, pointer.y, pointer.dx, pointer.dy, pointer.color);
-            pointer.moved = false;
-        }
+    for (let color in trackers) {
+      const tracker = trackers[color];
+      if (tracker.moved) {
+        splat(tracker.x, tracker.y, tracker.dx, tracker.dy, [tracker.color.r / 255, tracker.color.g / 255, tracker.color.b / 255]);
+        tracker.moved = false;
+      }
     }
 
     curlProgram.bind();
@@ -663,18 +620,18 @@ function resizeCanvas () {
 /*
 original touch interactions, to be replaced with the camera
 canvas.addEventListener('mousemove', (e) => {
-    pointers[0].moved = pointers[0].down;
-    pointers[0].dx = (e.offsetX - pointers[0].x) * 10.0;
-    pointers[0].dy = (e.offsetY - pointers[0].y) * 10.0;
-    pointers[0].x = e.offsetX;
-    pointers[0].y = e.offsetY;
+    trackers[0].moved = trackers[0].down;
+    trackers[0].dx = (e.offsetX - trackers[0].x) * 10.0;
+    trackers[0].dy = (e.offsetY - trackers[0].y) * 10.0;
+    trackers[0].x = e.offsetX;
+    trackers[0].y = e.offsetY;
 });
 
 canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const touches = e.targetTouches;
     for (let i = 0; i < touches.length; i++) {
-        let pointer = pointers[i];
+        let pointer = trackers[i];
         pointer.moved = pointer.down;
         pointer.dx = (touches[i].pageX - pointer.x) * 10.0;
         pointer.dy = (touches[i].pageY - pointer.y) * 10.0;
@@ -684,34 +641,34 @@ canvas.addEventListener('touchmove', (e) => {
 }, false);
 
 canvas.addEventListener('mousedown', () => {
-    pointers[0].down = true;
-    pointers[0].color = [Math.random() + 0.2, Math.random() + 0.2, Math.random() + 0.2];
+    trackers[0].down = true;
+    trackers[0].color = [Math.random() + 0.2, Math.random() + 0.2, Math.random() + 0.2];
 });
 
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
     const touches = e.targetTouches;
     for (let i = 0; i < touches.length; i++) {
-        if (i >= pointers.length)
-            pointers.push(new pointerPrototype());
+        if (i >= trackers.length)
+            trackers.push(new pointerPrototype());
 
-        pointers[i].id = touches[i].identifier;
-        pointers[i].down = true;
-        pointers[i].x = touches[i].pageX;
-        pointers[i].y = touches[i].pageY;
-        pointers[i].color = [Math.random() + 0.2, Math.random() + 0.2, Math.random() + 0.2];
+        trackers[i].id = touches[i].identifier;
+        trackers[i].down = true;
+        trackers[i].x = touches[i].pageX;
+        trackers[i].y = touches[i].pageY;
+        trackers[i].color = [Math.random() + 0.2, Math.random() + 0.2, Math.random() + 0.2];
     }
 });
 
 window.addEventListener('mouseup', () => {
-    pointers[0].down = false;
+    trackers[0].down = false;
 });
 
 window.addEventListener('touchend', (e) => {
     const touches = e.changedTouches;
     for (let i = 0; i < touches.length; i++)
-        for (let j = 0; j < pointers.length; j++)
-            if (touches[i].identifier == pointers[j].id)
-                pointers[j].down = false;
+        for (let j = 0; j < trackers.length; j++)
+            if (touches[i].identifier == trackers[j].id)
+                trackers[j].down = false;
 });
 */
