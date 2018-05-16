@@ -56,7 +56,8 @@ tracking.track('#camera', tracker, { camera: true });
 const trackers = {};
 
 //this will be done with the
-trackers.red = (new Tracker(new Color('red', 0.8, 0.1, 0.1), new Range(180, 255, 0, 80, 0, 80)));
+trackers.red = new Tracker(new Color('red', 0.8, 0.1, 0.1), new Range(180, 255, 0, 80, 0, 80));
+trackers.blue = new Tracker(new Color('blue', 0.1, 0.1, 0.8), new Range(0, 120, 0, 120, 160, 255));
 
 /*
 Color Tracker Handler
