@@ -1,6 +1,13 @@
-// conversion
-const cameraToCanvasX = document.getElementById('fluid').offsetWidth / document.getElementById('camera').offsetWidth;
-const cameraToCanvasY = document.getElementById('fluid').offsetHeight / document.getElementById('camera').offsetHeight;
+// pixel conversion
+const cameraToCanvasX = document.getElementById('fluid').offsetWidth / document.getElementById('tracker').offsetWidth;
+const cameraToCanvasY = document.getElementById('fluid').offsetHeight / document.getElementById('tracker').offsetHeight;
+
+console.log(cameraToCanvasX, cameraToCanvasY);
+
+// set up the background
+navigator.getUserMedia({video: true}, (stream) => {
+  document.getElementById('background').src = window.URL.createObjectURL(stream);
+}, () => {throw Error('Cannot capture user camera.')});
 
 class Color {
   constructor(name, r, g, b) {
@@ -11,7 +18,7 @@ class Color {
   }
 }
 
-class Range {
+class ColorRange {
   constructor(rMin, rMax, gMin, gMax, bMin, bMax) {
     this.r = {min: rMin, max: rMax};
     this.g = {min: gMin, max: gMax};
@@ -21,7 +28,7 @@ class Range {
 
 // this requires tracking.js before
 class Tracker {
-  constructor(color, range) {
+  constructor(color, colorRange) {
     this.x = 0;
     this.y = 0;
     this.dx = 0;
@@ -31,10 +38,10 @@ class Tracker {
     this.color = color;
 
     tracking.ColorTracker.registerColor(this.color.name, (r, g, b) => {
-      let redRange = r > range.r.min && r < range.r.max;
-      let greenRange = g > range.g.min && g < range.g.max;
-      let blueRange = b > range.b.min && b < range.b.max;
-      return redRange && greenRange && blueRange;
+      let inRedRange = r > colorRange.r.min && r < colorRange.r.max;
+      let inGreenRange = g > colorRange.g.min && g < colorRange.g.max;
+      let inBlueRange = b > colorRange.b.min && b < colorRange.b.max;
+      return inRedRange && inGreenRange && inBlueRange;
     });
     tracker.colors.push(this.color.name);
   }
@@ -48,16 +55,17 @@ class Tracker {
   }
 }
 
-// set up the tracking
+// set up the trackers
 let tracker = new tracking.ColorTracker([]);
-tracking.track('#camera', tracker, { camera: true });
+tracking.track('#tracker', tracker, { camera: true });
 
 
 const trackers = {};
 
 //this will be done with the
-trackers.red = new Tracker(new Color('red', 0.8, 0.1, 0.1), new Range(180, 255, 0, 80, 0, 80));
-trackers.blue = new Tracker(new Color('blue', 0.1, 0.1, 0.8), new Range(0, 120, 0, 120, 160, 255));
+trackers.red = new Tracker(new Color('red', 0.8, 0.1, 0.1), new ColorRange(180, 255, 0, 80, 0, 80));
+trackers.blue = new Tracker(new Color('blue', 0.1, 0.1, 0.8), new ColorRange(0, 120, 0, 120, 160, 255));
+trackers.white = new Tracker(new Color('white', 0.8, 0.8, 0.8), new ColorRange(100, 255, 100, 255, 100, 255));
 
 /*
 Color Tracker Handler

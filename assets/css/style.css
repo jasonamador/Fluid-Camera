@@ -3,17 +3,30 @@ body {
   margin: 0;
 }
 
-#camera {
+#tracker {
+  display: block;
   width: 640px;
   height: 480px;
+  margin: auto;
 }
 
-#fluid {
-  display: block;
+#background {
   position: absolute;
+  display: block;
   top: 0;
   width: 100%;
   height: 100%;
   margin: 0;
   transform: scaleX(-1);
+}
+
+#fluid {
+  position: absolute;
+  display: block;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  transform: scaleX(-1);
+  opacity: 0.75;
 }
