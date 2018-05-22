@@ -5,12 +5,29 @@ const url = require('url');
 require('electron-reload')(__dirname);
 
 // global variable for the main window
+let displayWindow, controlWindow
 
-function createWindow() {
-  win = new BrowserWindow({fullscreen: true});
+function createWindows() {
+  displayWindow = new BrowserWindow({
+    fullscreen: false,
+    width: 800,
+    height: 600
+  });
 
-  win.loadURL(url.format({
-    pathname: path.join(__dirname, 'src/index.html'),
+  displayWindow.loadURL(url.format({
+    pathname: path.join(__dirname, './src/display.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
+
+  controlWindow = new BrowserWindow({
+    fullscreen: false,
+    width: 800,
+    height: 600
+  });
+
+  controlWindow.loadURL(url.format({
+    pathname: path.join(__dirname, './src/control.html'),
     protocol: 'file:',
     slashes: true
   }));
@@ -34,8 +51,8 @@ function createWindow() {
         }, {
           label: 'DevTools',
           click() {
-            win.webContents.toggleDevTools();
-            console.log('dev');
+            displayWindow.webContents.toggleDevTools();
+            controlWindow.webContents.toggleDevTools();
           },
           accelerator: 'CmdOrCtrl+I'
         }
@@ -46,4 +63,12 @@ function createWindow() {
   Menu.setApplicationMenu(menu);
 }
 
-app.on('ready', createWindow);
+app.on('ready', createWindows);
+
+ipcMain.on('new-tracker', (event, tracker) => {
+  displayWindow.webContents.send('new-tracker', tracker);
+});
+
+ipcMain.on('update-tracker', (event, tracker) => {
+  displayWindow.webContents.send('update-tracker', tracker);
+});
