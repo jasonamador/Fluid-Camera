@@ -11,24 +11,26 @@ canvas.width = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
 
 // send tracker the dimensions
-ipcRenderer.send('resize-fluid', {x: canvas.width, y: canvas.height})
+ipcRenderer.send('resize-display', {x: canvas.width, y: canvas.height})
 
 // listeners for tracker info
 let trackers = {};
 
 ipcRenderer.on('update-tracker', (event, tracker) => {
-  console.log('update tracker display');
+  // maybe make this not create a new object
   trackers[tracker.name] = {
     x: tracker.x,
     y: tracker.y,
     dx: tracker.dx,
     dy: tracker.dy,
-    color: [tracker.color.r, tracker.color.g, tracker.color.b]
+    name: tracker.name,
+    moved: tracker.moved,
+    down: tracker.down,
+    color : tracker.color
   }
 });
 
 ipcRenderer.on('new-tracker', (event, tracker) => {
-  console.log('new tracker display');
   trackers[tracker.name] = {
     x: tracker.x,
     y: tracker.y,
@@ -543,8 +545,7 @@ function update () {
     density.swap();
 
     for (let name in trackers) {
-      const tracker = trackers[color];
-      console.log(tracker)
+      const tracker = trackers[name];
       if (tracker.moved) {
         splat(tracker.x, tracker.y, tracker.dx, tracker.dy, [tracker.color.r, tracker.color.g, tracker.color.b]);
         tracker.moved = false;

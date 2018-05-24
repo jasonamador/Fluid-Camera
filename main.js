@@ -1,13 +1,16 @@
-const {app, Menu, BrowserWindow, ipcMain} = require('electron');
+const {app, Menu, BrowserWindow, ipcMain, ipcRenderer} = require('electron');
 const path = require('path');
 const url = require('url');
 
 require('electron-reload')(__dirname);
 
 // global variable for the main window
-let displayWindow, controlWindow
+let displayWindow, controlWindow;
 
 function createWindows() {
+  /*
+  Display Window
+  */
   displayWindow = new BrowserWindow({
     fullscreen: false,
     width: 800,
@@ -20,6 +23,9 @@ function createWindows() {
     slashes: true
   }));
 
+  /*
+  Control Window
+  */
   controlWindow = new BrowserWindow({
     fullscreen: false,
     width: 800,
@@ -32,6 +38,9 @@ function createWindows() {
     slashes: true
   }));
 
+  /*
+  Application Menu
+  */
   const menu = Menu.buildFromTemplate([
     {
       label: 'Menu',
@@ -59,7 +68,6 @@ function createWindows() {
       ]
     }
   ]);
-
   Menu.setApplicationMenu(menu);
 }
 
@@ -71,4 +79,7 @@ ipcMain.on('new-tracker', (event, tracker) => {
 
 ipcMain.on('update-tracker', (event, tracker) => {
   displayWindow.webContents.send('update-tracker', tracker);
+});
+
+ipcMain.on('rezize-display', (event, displayDimensions) => {
 });

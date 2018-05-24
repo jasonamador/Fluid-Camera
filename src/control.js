@@ -1,14 +1,13 @@
-
 const {remote, ipcRenderer} = require('electron');
 
 // pixel conversion
-let cameraToCanvasX;
-let cameraToCanvasY;
+let cameraToCanvasX = 1;
+let cameraToCanvasY = 1;
 
 // ipc handlers
-ipcRenderer.on('resize-fluid', (event, arg) => {
-  cameraToCanvasX = arg.x / document.getElementById('tracker').offsetWidth;
-  cameraToCanvasY = arg.y / document.getElementById('tracker').offsetHeight;
+ipcRenderer.on('resize-display', (event, displayDimensions) => {
+  cameraToCanvasX = displayDimensionsarg.x / document.getElementById('tracker').offsetWidth;
+  cameraToCanvasY = displayDimensionsarg.y / document.getElementById('tracker').offsetHeight;
 });
 
 // tracker classes
