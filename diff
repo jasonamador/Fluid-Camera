@@ -1,0 +1,18 @@
+diff --git a/src/control.js b/src/control.js
+index 9ffc897..6b14919 100644
+--- a/src/control.js
++++ b/src/control.js
+@@ -60,6 +60,13 @@ class Tracker {
+   }
+ }
+ 
++// get all the video devices
++let cameras = [];
++navigator.mediaDevices.enumerateDevices().then((device) => {
++  cameras.push(device.filter(device => device.kind === 'videoinput'));
++  console.log(cameras);
++}).catch((e) => new Error(e));
++
+ // set up the trackers
+ let tracker = new tracking.ColorTracker([]);
+ tracking.track('#tracker', tracker, { camera: true });

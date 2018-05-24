@@ -60,6 +60,24 @@ class Tracker {
   }
 }
 
+// get all the video devices
+let cameras;
+navigator.mediaDevices.enumerateDevices().then((device) => {
+  cameras = device.filter(device => device.kind === 'videoinput' && !device.label.includes('iGlasses'));
+  // and put them in the camera <select>
+  console.log(cameras);
+  cameras.forEach(e => {
+    // create a new option
+    let camera = document.createElement('option');
+    camera.label = e.label;
+    camera.value = e.deviceId;
+
+    document.getElementById('camera-select').appendChild(camera);
+    console.log(camera);
+  });
+}).catch((e) => new Error(e));
+
+
 // set up the trackers
 let tracker = new tracking.ColorTracker([]);
 tracking.track('#tracker', tracker, { camera: true });
