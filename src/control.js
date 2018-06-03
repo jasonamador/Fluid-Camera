@@ -6,8 +6,9 @@ let cameraToCanvasY = 1;
 
 // ipc handlers
 ipcRenderer.on('resize-display', (event, displayDimensions) => {
-  cameraToCanvasX = displayDimensionsarg.x / document.getElementById('tracker').offsetWidth;
-  cameraToCanvasY = displayDimensionsarg.y / document.getElementById('tracker').offsetHeight;
+  cameraToCanvasX = displayDimensions.x / document.getElementById('tracker').offsetWidth;
+  cameraToCanvasY = displayDimensions.y / document.getElementById('tracker').offsetHeight;
+  console.log(cameraToCanvasX, cameraToCanvasY);
 });
 
 // tracker classes
@@ -64,28 +65,32 @@ class Tracker {
 let cameras;
 navigator.mediaDevices.enumerateDevices().then((device) => {
   cameras = device.filter(device => device.kind === 'videoinput' && !device.label.includes('iGlasses'));
-  // and put them in the camera <select>
-  console.log(cameras);
+  // and put them in the select
   cameras.forEach(e => {
-    // create a new option
-    let camera = document.createElement('option');
-    camera.label = e.label;
-    camera.value = e.deviceId;
-
-    document.getElementById('camera-select').appendChild(camera);
-    console.log(camera);
+    let cameraOption = document.createElement('option');
+    cameraOption.label = e.label;
+    cameraOption.value = e.deviceId;
+    document.getElementById('camera-select').appendChild(cameraOption);
   });
 }).catch((e) => new Error(e));
 
+// camera select listener
+document.getElementById('camera-select').onchange = (e) => {
+  console.log('selected deviceId:', e.target[0].value);
+
+};
 
 // set up the trackers
 let tracker = new tracking.ColorTracker([]);
 tracking.track('#tracker', tracker, { camera: true });
 
 const trackers = {};
-trackers.red = new Tracker('red', new Color('red', 0.8, 0.1, 0.1), new ColorRange(180, 255, 0, 80, 0, 80));
-trackers.blue = new Tracker('blue', new Color('blue', 0.1, 0.1, 0.8), new ColorRange(0, 120, 0, 120, 160, 255));
-trackers.white = new Tracker('white', new Color('white', 0.8, 0.8, 0.8), new ColorRange(100, 255, 100, 255, 100, 255));
+
+// some easy defaults
+trackers.red = new Tracker('red', new Color('red', 0.8, 0.1, 0.1), new ColorRange(100, 255, 0, 100, 0, 100));
+trackers.green = new Tracker('green', new Color('green', 0.1, 0.8, 0.1), new ColorRange(0, 80, 100, 255, 0, 100));
+trackers.blue = new Tracker('blue', new Color('blue', 0.1, 0.1, 0.8), new ColorRange(0, 80, 0, 80, 100, 255));
+trackers.white = new Tracker('white', new Color('white', 0.8, 0.8, 0.8), new ColorRange(180, 255, 180, 255, 180, 255));
 
 /*
 Color Tracker Handler
