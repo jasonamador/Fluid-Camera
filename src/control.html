@@ -6,10 +6,25 @@
   </head>
   <body>
     <video class="reverse-x" id="tracker" preload autoplay loop muted></video>
-    <form id="controls">
-      <select id="camera-select" name="camera-select">
-      </select>
+    <select id="camera-select" name="camera-select">
+    </select>
+    <form id="fluid-controls">
+      <label for="splatRadius">Fluid Radius</label>
+      <input id="splatRadius" type="range" min="0" max="0.05" step="0.0005" value="0.005"></input>
+
+      <label for="curl">Fluid Curl</label>
+      <input id="curl" type="range" min="0" max="60" step="1" value="30"></input>
+
+      <label for="densityDissipation">Fluid Density Dissipation</label>
+      <input id="densityDissipation" type="range" min="0.5" max="1" step="0.01" value="0.98"></input>
+
+      <label for="velocityDissipation">Fluid Velocity Dissipation</label>
+      <input id="velocityDissipation" type="range" min="0.5" max="1" step="0.01" value="0.99"></input>
+
+      <label for="pressureDissipation">Fluid Pressure Dissipation</label>
+      <input id="pressureDissipation" type="range" min="0.5" max="1" step="0.01" value="0.8"></input>
     </form>
+
     <script src="../assets/js/tracking-min.js"></script>
     <script src="./control.js"></script>
   </body>

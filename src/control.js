@@ -123,3 +123,9 @@ tracker.on('track', function(event) {
     });
   }
 });
+
+let fluidControls = document.getElementById('fluid-controls');
+
+fluidControls.addEventListener('change', ({target}) => {
+  ipcRenderer.send('fluid-control', {key: target.id, value: target.value});
+});

@@ -28,7 +28,6 @@ function createWindows() {
   displayWindow.on('resize', e => {
     let newSize = displayWindow.getContentSize();
     controlWindow.webContents.send('resize-display', {x: newSize[0], y: newSize[1]});
-    console.log(newSize);
   });
 
   /*
@@ -92,4 +91,8 @@ ipcMain.on('update-tracker', (event, tracker) => {
 
 ipcMain.on('change-camera', (event, deviceId) => {
   displayWindow.webContents.send('change-camera', deviceId);
+});
+
+ipcMain.on('fluid-control', (event, config) => {
+  displayWindow.webContents.send('fluid-control', config);
 });

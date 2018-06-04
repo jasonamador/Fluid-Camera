@@ -16,6 +16,10 @@ ipcRenderer.send('resize-display', {x: canvas.width, y: canvas.height})
 // listeners for tracker info
 let trackers = {};
 
+ipcRenderer.on('fluid-control', (event, config) => {
+  fluidConfig[config.key] = config.value;
+});
+
 ipcRenderer.on('update-tracker', (event, tracker) => {
   // maybe make this not create a new object
   trackers[tracker.name] = {
@@ -31,7 +35,6 @@ ipcRenderer.on('update-tracker', (event, tracker) => {
 });
 
 ipcRenderer.on('change-camera', (event, deviceId) => {
-  console.log(deviceId);
   var constraints = {
     video: {deviceId: deviceId ? {exact: deviceId} : undefined}
   };
@@ -51,8 +54,8 @@ ipcRenderer.on('new-tracker', (event, tracker) => {
   }
 });
 
-// config
-let config = {
+// fluidConfig
+let fluidConfig = {
     textureDownsample: 1,
     densityDisspiation: 0.98,
     velocityDissipation: 0.99,
@@ -458,8 +461,8 @@ const pressureProgram = new GLProgram(baseVertexShader, pressureShader);
 const gradienSubtractProgram = new GLProgram(baseVertexShader, gradientSubtractShader);
 
 function initFramebuffers () {
-    textureWidth = gl.drawingBufferWidth >> config.textureDownsample;
-    textureHeight = gl.drawingBufferHeight >> config.textureDownsample;
+    textureWidth = gl.drawingBufferWidth >> fluidConfig.textureDownsample;
+    textureHeight = gl.drawingBufferHeight >> fluidConfig.textureDownsample;
 
     const texType = ext.halfFloatTexType;
     const rgba = ext.formatRGBA;
@@ -545,13 +548,13 @@ function update () {
     gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read[2]);
     gl.uniform1i(advectionProgram.uniforms.uSource, velocity.read[2]);
     gl.uniform1f(advectionProgram.uniforms.dt, dt);
-    gl.uniform1f(advectionProgram.uniforms.dissipation, config.velocityDissipation);
+    gl.uniform1f(advectionProgram.uniforms.dissipation, fluidConfig.velocityDissipation);
     blit(velocity.write[1]);
     velocity.swap();
 
     gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read[2]);
     gl.uniform1i(advectionProgram.uniforms.uSource, density.read[2]);
-    gl.uniform1f(advectionProgram.uniforms.dissipation, config.densityDisspiation);
+    gl.uniform1f(advectionProgram.uniforms.dissipation, fluidConfig.densityDisspiation);
     blit(density.write[1]);
     density.swap();
 
@@ -572,7 +575,7 @@ function update () {
     gl.uniform2f(vorticityProgram.uniforms.texelSize, 1.0 / textureWidth, 1.0 / textureHeight);
     gl.uniform1i(vorticityProgram.uniforms.uVelocity, velocity.read[2]);
     gl.uniform1i(vorticityProgram.uniforms.ucurl, curl[2]);
-    gl.uniform1f(vorticityProgram.uniforms.curl, config.curl);
+    gl.uniform1f(vorticityProgram.uniforms.curl, fluidConfig.curl);
     gl.uniform1f(vorticityProgram.uniforms.dt, dt);
     blit(velocity.write[1]);
     velocity.swap();
@@ -587,7 +590,7 @@ function update () {
     gl.activeTexture(gl.TEXTURE0 + pressureTexId);
     gl.bindTexture(gl.TEXTURE_2D, pressure.read[0]);
     gl.uniform1i(clearProgram.uniforms.uTexture, pressureTexId);
-    gl.uniform1f(clearProgram.uniforms.value, config.pressureDissipation);
+    gl.uniform1f(clearProgram.uniforms.value, fluidConfig.pressureDissipation);
     blit(pressure.write[1]);
     pressure.swap();
 
@@ -597,7 +600,7 @@ function update () {
     pressureTexId = pressure.read[2];
     gl.uniform1i(pressureProgram.uniforms.uPressure, pressureTexId);
     gl.activeTexture(gl.TEXTURE0 + pressureTexId);
-    for (let i = 0; i < config.pressureIterations; i++) {
+    for (let i = 0; i < fluidConfig.pressureIterations; i++) {
         gl.bindTexture(gl.TEXTURE_2D, pressure.read[0]);
         blit(pressure.write[1]);
         pressure.swap();
@@ -624,7 +627,7 @@ function splat (x, y, dx, dy, color) {
     gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas.width / canvas.height);
     gl.uniform2f(splatProgram.uniforms.point, x / canvas.width, 1.0 - y / canvas.height);
     gl.uniform3f(splatProgram.uniforms.color, dx, -dy, 1.0);
-    gl.uniform1f(splatProgram.uniforms.radius, config.splatRadius);
+    gl.uniform1f(splatProgram.uniforms.radius, fluidConfig.splatRadius);
     blit(velocity.write[1]);
     velocity.swap();
 
