@@ -90,5 +90,6 @@ ipcMain.on('update-tracker', (event, tracker) => {
   displayWindow.webContents.send('update-tracker', tracker);
 });
 
-ipcMain.on('rezize-display', (event, displayDimensions) => {
+ipcMain.on('change-camera', (event, deviceId) => {
+  displayWindow.webContents.send('change-camera', deviceId);
 });

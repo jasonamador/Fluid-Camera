@@ -4,7 +4,7 @@ const {remote, ipcRenderer} = require('electron');
 let cameraToCanvasX = 1;
 let cameraToCanvasY = 1;
 
-// ipc handlers
+// ipc listeners
 ipcRenderer.on('resize-display', (event, displayDimensions) => {
   cameraToCanvasX = displayDimensions.x / document.getElementById('tracker').offsetWidth;
   cameraToCanvasY = displayDimensions.y / document.getElementById('tracker').offsetHeight;
@@ -61,23 +61,42 @@ class Tracker {
   }
 }
 
+/*
+Camera Change Stuff
+*/
+
+// grab our camera select
+let cameraSelect = document.getElementById('camera-select');
+
 // get all the video devices
 let cameras;
-navigator.mediaDevices.enumerateDevices().then((device) => {
-  cameras = device.filter(device => device.kind === 'videoinput' && !device.label.includes('iGlasses'));
+navigator.mediaDevices.enumerateDevices().then((devices) => {
+  cameras = devices.filter(device => device.kind === 'videoinput' && !device.label.includes('iGlasses'));
   // and put them in the select
   cameras.forEach(e => {
     let cameraOption = document.createElement('option');
     cameraOption.label = e.label;
     cameraOption.value = e.deviceId;
-    document.getElementById('camera-select').appendChild(cameraOption);
+    cameraSelect.appendChild(cameraOption);
   });
 }).catch((e) => new Error(e));
 
 // camera select listener
-document.getElementById('camera-select').onchange = (e) => {
-  console.log('selected deviceId:', e.target[0].value);
-
+cameraSelect.onchange = e => {
+  if (window.stream) {
+    window.stream.getTracks().forEach(function(track) {
+      track.stop();
+    });
+  }
+  let deviceId = cameraSelect.value;
+  ipcRenderer.send('change-camera', deviceId);
+  let constraints = {
+    video: {deviceId: deviceId ? {exact: deviceId} : undefined}
+  };
+  navigator.mediaDevices.getUserMedia(constraints).
+    then(stream => {
+      document.getElementById('tracker').srcObject = stream;
+    });
 };
 
 // set up the trackers

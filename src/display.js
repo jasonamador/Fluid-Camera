@@ -30,6 +30,17 @@ ipcRenderer.on('update-tracker', (event, tracker) => {
   }
 });
 
+ipcRenderer.on('change-camera', (event, deviceId) => {
+  console.log(deviceId);
+  var constraints = {
+    video: {deviceId: deviceId ? {exact: deviceId} : undefined}
+  };
+  navigator.mediaDevices.getUserMedia(constraints).
+    then(stream => {
+      document.getElementById('background').srcObject = stream;
+    });
+});
+
 ipcRenderer.on('new-tracker', (event, tracker) => {
   trackers[tracker.name] = {
     x: tracker.x,
