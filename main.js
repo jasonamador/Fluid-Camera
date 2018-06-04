@@ -12,9 +12,11 @@ function createWindows() {
   Display Window
   */
   displayWindow = new BrowserWindow({
-    fullscreen: false,
+    // fullscreen: true,
     width: 800,
-    height: 600
+    height: 600,
+    x: 0,
+    y: 0
   });
 
   displayWindow.loadURL(url.format({
@@ -22,6 +24,12 @@ function createWindows() {
     protocol: 'file:',
     slashes: true
   }));
+
+  displayWindow.on('resize', e => {
+    let newSize = displayWindow.getContentSize();
+    controlWindow.webContents.send('resize-display', {x: newSize[0], y: newSize[1]});
+    console.log(newSize);
+  });
 
   /*
   Control Window
@@ -72,6 +80,7 @@ function createWindows() {
 }
 
 app.on('ready', createWindows);
+
 
 ipcMain.on('new-tracker', (event, tracker) => {
   displayWindow.webContents.send('new-tracker', tracker);

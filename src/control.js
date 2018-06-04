@@ -8,7 +8,7 @@ let cameraToCanvasY = 1;
 ipcRenderer.on('resize-display', (event, displayDimensions) => {
   cameraToCanvasX = displayDimensions.x / document.getElementById('tracker').offsetWidth;
   cameraToCanvasY = displayDimensions.y / document.getElementById('tracker').offsetHeight;
-  console.log(cameraToCanvasX, cameraToCanvasY);
+  console.log(displayDimensions);
 });
 
 // tracker classes
