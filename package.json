@@ -1,28 +1,13 @@
 {
-  "name": "fluid-camera",
-  "version": "1.0.0",
-  "description": "Light tracking and fluid simulator",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jasonamador/Fluid-Camera.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jasonamador/Fluid-Camera/issues"
-  },
-  "homepage": "https://github.com/jasonamador/Fluid-Camera#readme",
-  "dependencies": {
-    "tracking": "^1.1.3"
+  "engines": {
+    "node": ">= 0.10.0"
   },
   "devDependencies": {
-    "bulma": "^0.7.1",
-    "electron": "^2.0.0",
-    "electron-reload": "^1.2.2"
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-qunit": "~0.5.2",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-uglify": "~0.5.0"
   }
 }

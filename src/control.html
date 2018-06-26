@@ -3,6 +3,7 @@
   <head>
     <title>Fluid Camera Controls</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/bulma.css">
   </head>
   <body>
     <video class="reverse-x" id="tracker" preload autoplay loop muted></video>
@@ -16,13 +17,13 @@
       <input id="curl" type="range" min="0" max="60" step="1" value="30"></input>
 
       <label for="densityDissipation">Fluid Density Dissipation</label>
-      <input id="densityDissipation" type="range" min="0.5" max="1" step="0.01" value="0.98"></input>
+      <input id="densityDissipation" type="range" min="0.8" max="1" step="0.001" value="0.98"></input>
 
       <label for="velocityDissipation">Fluid Velocity Dissipation</label>
-      <input id="velocityDissipation" type="range" min="0.5" max="1" step="0.01" value="0.99"></input>
+      <input id="velocityDissipation" type="range" min="0.8" max="1" step="0.001" value="0.99"></input>
 
       <label for="pressureDissipation">Fluid Pressure Dissipation</label>
-      <input id="pressureDissipation" type="range" min="0.5" max="1" step="0.01" value="0.8"></input>
+      <input id="pressureDissipation" type="range" min="0.8" max="1" step="0.001" value="0.8"></input>
     </form>
 
     <script src="../assets/js/tracking-min.js"></script>
